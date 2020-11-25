@@ -1,0 +1,12 @@
+{
+    "name": "os2web/os2web_meetings_edoc",
+    "type": "drupal-module",
+    "description": "Import meetings from EDOC ESDH system",
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "license": "EUPL-1.2",
+    "require": {
+        "drupal/migrate_plus": "^4.2",
+        "drupal/migrate_tools": "^4.5"
+    }
+}
