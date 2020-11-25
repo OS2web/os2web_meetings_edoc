@@ -134,12 +134,12 @@ class MeetingsDirectoryEdoc extends MeetingsDirectory {
       $access = ($publishingType !== 'SKAL PUBLICERES')? FALSE : TRUE;
      
       // Getting attachments (text).
-         $canonical_attachments [] =  [
+      $canonical_attachments = array([
         'id' => $id . $bpNumber,
         'title' => 'Beskrivelse',
         'body' => nl2br($bullet_point['FullText']),
         'access' => $access,
-      ];
+      ]);
       // Getting enclosures (files).
       $source_enclosures = NULL;
       if (array_key_exists('Attachments', $bullet_point['Document'])) {
