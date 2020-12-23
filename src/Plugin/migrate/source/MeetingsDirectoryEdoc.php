@@ -159,7 +159,10 @@ class MeetingsDirectoryEdoc extends MeetingsDirectory {
         'enclosures' =>  $canonical_enclosures,
       ];
     }
-
+    usort($canonical_bullet_points, function ($item1, $item2) {
+    if ($item1['number'] == $item2['number']) return 0;
+    return $item1['number'] < $item2['number'] ? -1 : 1;
+    });
     return $canonical_bullet_points;
   }
 
