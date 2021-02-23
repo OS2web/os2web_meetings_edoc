@@ -6,7 +6,7 @@
     "prefer-stable": true,
     "license": "EUPL-1.2",
     "require": {
-        "drupal/migrate_plus": "^4.2",
-        "drupal/migrate_tools": "^4.5"
+        "drupal/migrate_plus": "^5.1",
+        "drupal/migrate_tools": "^5.0"
     }
 }
