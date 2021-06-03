@@ -36,7 +36,7 @@ class MeetingsDirectoryEdoc extends MeetingsDirectory {
       return MeetingsDirectory::AGENDA_ACCESS_OPEN;
     }
   }
-  
+
   /**
    * {@inheritdoc}
    */
@@ -47,7 +47,7 @@ class MeetingsDirectoryEdoc extends MeetingsDirectory {
   }
     return $meeting_id;
   }
- 
+
 
   /**
    * {@inheritdoc}
@@ -104,15 +104,14 @@ class MeetingsDirectoryEdoc extends MeetingsDirectory {
    * {@inheritdoc}
    */
   public function convertCommitteeToCanonical(array $source) {
-   
-    $id = $this->generateCommitteeId($source['committee_name']);
+    $id = $source['committee_name'];
     $name = $source['committee_name'];
     return [
       'id' => $id,
       'name' => $name,
     ];
   }
-  
+
   /**
    * {@inheritdoc}
    */
@@ -132,7 +131,6 @@ class MeetingsDirectoryEdoc extends MeetingsDirectory {
       $title = $bullet_point['Document']['Title'];
       $publishingType = $bullet_point['Document']['PublishingType'];
       $access = ($publishingType !== 'SKAL PUBLICERES')? FALSE : TRUE;
-     
       // Getting attachments (text).
       $canonical_attachments = array([
         'id' => $id . $bpNumber,
@@ -310,12 +308,4 @@ class MeetingsDirectoryEdoc extends MeetingsDirectory {
       }
     }
   }
-
-  private function generateCommitteeId($committee_name) {
-  $committee_id = crc32($committee_name);
-  if ($committee_id > 2147483647){
-    $committee_id = substr($committee_id, 0,9);//mysql int out of range fix
-  }
-  return $committee_id;
-}
 }
