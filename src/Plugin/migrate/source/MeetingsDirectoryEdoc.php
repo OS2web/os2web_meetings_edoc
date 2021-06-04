@@ -3,6 +3,7 @@
 namespace Drupal\os2web_meetings_edoc\Plugin\migrate\source;
 
 use Drupal\migrate\Event\MigrateImportEvent;
+use Drupal\migrate\Plugin\MigrationInterface;
 use Drupal\node\Entity\Node;
 use Drupal\os2web_meetings\Entity\Meeting;
 use Drupal\os2web_meetings\Form\SettingsForm;
@@ -16,6 +17,15 @@ use Drupal\os2web_meetings\Plugin\migrate\source\MeetingsDirectory;
  * )
  */
 class MeetingsDirectoryEdoc extends MeetingsDirectory {
+
+  /**
+   * {@inheritdoc}
+   */
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, MigrationInterface $migration) {
+    // TODO: add import skip.
+    // TODO: if we are importing a previous version of the same meeting - SKIP.
+    parent::__construct($configuration, $plugin_id, $plugin_definition, $migration);
+  }
 
   /**
    * {@inheritdoc}
