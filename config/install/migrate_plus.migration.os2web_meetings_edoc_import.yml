@@ -7,7 +7,7 @@ source:
   plugin: os2web_meetings_directory_edoc
   data_fetcher_plugin: file
   data_parser_plugin: os2web_meetings_simple_xml_array
-  pattern: '/.*\.(xml)/i'
+  pattern: '/.*\.(xml)$/i'
   item_selector: /Meeting
   track_changes: true
   data_parser_plugin_simple_array: true

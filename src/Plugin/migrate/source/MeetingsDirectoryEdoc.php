@@ -39,6 +39,12 @@ class MeetingsDirectoryEdoc extends MeetingsDirectory {
    * {@inheritdoc}
    */
   public function convertAgendaAccessToCanonical(array $source) {
+    // TODO: add multiple agendas handling.
+    // Skipping multiple agendas.
+    if (is_array($source['agenda_access'])) {
+      return MeetingsDirectory::AGENDA_ACCESS_CLOSED;
+    }
+
     if (stripos($source['agenda_access'], 'lukket') !== FALSE) {
       return MeetingsDirectory::AGENDA_ACCESS_CLOSED;
     }
@@ -135,6 +141,14 @@ class MeetingsDirectoryEdoc extends MeetingsDirectory {
   public function convertBulletPointsToCanonical(array $source) {
     $canonical_bullet_points = [];
     $source_bullet_points = $source['bullet_points'][0]['MeetingAgendaItem'];
+
+    // Dealing with one BP meeting.
+    if (array_key_exists('AgendaItemNumber', $source_bullet_points)) {
+      $source_bullet_points = [
+        0 => $source_bullet_points
+      ];
+    }
+
     foreach ($source_bullet_points as $bullet_point) {
       $id = $bullet_point['Document']['@attributes']['documentid'];
       $bpNumber = $bullet_point['AgendaItemNumber'];
@@ -150,8 +164,10 @@ class MeetingsDirectoryEdoc extends MeetingsDirectory {
       ]);
       // Getting enclosures (files).
       $source_enclosures = NULL;
-      if (array_key_exists('Attachments', $bullet_point['Document'])) {
-        $source_enclosures = $bullet_point['Document']['Attachments'] ?? NULL;
+      if (is_array($bullet_point['Document'])) {
+        if (array_key_exists('Attachments', $bullet_point['Document'])) {
+          $source_enclosures = $bullet_point['Document']['Attachments'] ?? NULL;
+        }
       }
       $canonical_enclosures = [];
       if (is_array($source_enclosures)) {
