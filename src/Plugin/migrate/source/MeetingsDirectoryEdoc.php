@@ -153,6 +153,12 @@ class MeetingsDirectoryEdoc extends MeetingsDirectory {
       $id = $bullet_point['Document']['@attributes']['documentid'];
       $bpNumber = $bullet_point['AgendaItemNumber'];
       $title = $bullet_point['Document']['Title'];
+
+      // Skipping bullet points with no titles.
+      if (!$title) {
+        continue;
+      }
+
       $publishingType = $bullet_point['Document']['PublishingType'];
       $access = ($publishingType !== 'SKAL PUBLICERES')? FALSE : TRUE;
       // Getting attachments (text).
