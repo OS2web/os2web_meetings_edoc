@@ -7,7 +7,7 @@ source:
   plugin: os2web_meetings_directory_edoc
   data_fetcher_plugin: file
   data_parser_plugin: os2web_meetings_simple_xml_array
-  pattern: '/.*\.(xml)/i'
+  pattern: '/.*\.(xml)$/i'
   item_selector: /Meeting
   track_changes: true
   data_parser_plugin_simple_array: true
@@ -21,6 +21,9 @@ source:
     - name: title
       label: Meeting title
       selector: "Committee"
+    - name: meeting_start_date_unprocessed
+      label: Meeting start date
+      selector: "MeetingDate"
     - name: meeting_start_date
       label: Meeting start date
       selector: "MeetingDate"
@@ -33,8 +36,8 @@ source:
   ids:
     title:
       type: string
-    meeting_start_date:
-        type: string
+    meeting_start_date_unprocessed:
+      type: string
 process:
   type:
     plugin: default_value

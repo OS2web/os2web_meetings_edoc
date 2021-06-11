@@ -3,6 +3,7 @@
 namespace Drupal\os2web_meetings_edoc\Plugin\migrate\source;
 
 use Drupal\migrate\Event\MigrateImportEvent;
+use Drupal\migrate\Plugin\MigrationInterface;
 use Drupal\node\Entity\Node;
 use Drupal\os2web_meetings\Entity\Meeting;
 use Drupal\os2web_meetings\Form\SettingsForm;
@@ -20,6 +21,15 @@ class MeetingsDirectoryEdoc extends MeetingsDirectory {
   /**
    * {@inheritdoc}
    */
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, MigrationInterface $migration) {
+    // TODO: add import skip.
+    // TODO: if we are importing a previous version of the same meeting - SKIP.
+    parent::__construct($configuration, $plugin_id, $plugin_definition, $migration);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function getMeetingsManifestPath() {
     return \Drupal::config(SettingsForm::$configName)
       ->get('edoc_meetings_manifest_path');
@@ -29,6 +39,12 @@ class MeetingsDirectoryEdoc extends MeetingsDirectory {
    * {@inheritdoc}
    */
   public function convertAgendaAccessToCanonical(array $source) {
+    // TODO: add multiple agendas handling.
+    // Skipping multiple agendas.
+    if (is_array($source['agenda_access'])) {
+      return MeetingsDirectory::AGENDA_ACCESS_CLOSED;
+    }
+
     if (stripos($source['agenda_access'], 'lukket') !== FALSE) {
       return MeetingsDirectory::AGENDA_ACCESS_CLOSED;
     }
@@ -36,7 +52,7 @@ class MeetingsDirectoryEdoc extends MeetingsDirectory {
       return MeetingsDirectory::AGENDA_ACCESS_OPEN;
     }
   }
-  
+
   /**
    * {@inheritdoc}
    */
@@ -47,7 +63,7 @@ class MeetingsDirectoryEdoc extends MeetingsDirectory {
   }
     return $meeting_id;
   }
- 
+
 
   /**
    * {@inheritdoc}
@@ -104,15 +120,14 @@ class MeetingsDirectoryEdoc extends MeetingsDirectory {
    * {@inheritdoc}
    */
   public function convertCommitteeToCanonical(array $source) {
-   
-    $id = $this->generateCommitteeId($source['committee_name']);
+    $id = $source['committee_name'];
     $name = $source['committee_name'];
     return [
       'id' => $id,
       'name' => $name,
     ];
   }
-  
+
   /**
    * {@inheritdoc}
    */
@@ -126,13 +141,26 @@ class MeetingsDirectoryEdoc extends MeetingsDirectory {
   public function convertBulletPointsToCanonical(array $source) {
     $canonical_bullet_points = [];
     $source_bullet_points = $source['bullet_points'][0]['MeetingAgendaItem'];
+
+    // Dealing with one BP meeting.
+    if (array_key_exists('AgendaItemNumber', $source_bullet_points)) {
+      $source_bullet_points = [
+        0 => $source_bullet_points
+      ];
+    }
+
     foreach ($source_bullet_points as $bullet_point) {
       $id = $bullet_point['Document']['@attributes']['documentid'];
       $bpNumber = $bullet_point['AgendaItemNumber'];
       $title = $bullet_point['Document']['Title'];
+
+      // Skipping bullet points with no titles.
+      if (!$title) {
+        continue;
+      }
+
       $publishingType = $bullet_point['Document']['PublishingType'];
       $access = ($publishingType !== 'SKAL PUBLICERES')? FALSE : TRUE;
-     
       // Getting attachments (text).
       $canonical_attachments = array([
         'id' => $id . $bpNumber,
@@ -142,8 +170,10 @@ class MeetingsDirectoryEdoc extends MeetingsDirectory {
       ]);
       // Getting enclosures (files).
       $source_enclosures = NULL;
-      if (array_key_exists('Attachments', $bullet_point['Document'])) {
-        $source_enclosures = $bullet_point['Document']['Attachments'] ?? NULL;
+      if (is_array($bullet_point['Document'])) {
+        if (array_key_exists('Attachments', $bullet_point['Document'])) {
+          $source_enclosures = $bullet_point['Document']['Attachments'] ?? NULL;
+        }
       }
       $canonical_enclosures = [];
       if (is_array($source_enclosures)) {
@@ -310,12 +340,4 @@ class MeetingsDirectoryEdoc extends MeetingsDirectory {
       }
     }
   }
-
-  private function generateCommitteeId($committee_name) {
-  $committee_id = crc32($committee_name);
-  if ($committee_id > 2147483647){
-    $committee_id = substr($committee_id, 0,9);//mysql int out of range fix
-  }
-  return $committee_id;
-}
 }
