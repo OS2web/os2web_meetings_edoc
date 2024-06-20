@@ -300,7 +300,7 @@ class MeetingsDirectoryEdoc extends MeetingsDirectory {
     parent::postImport($event);
 
     // Find all meetings.
-    $query = \Drupal::entityQuery('node');
+    $query = \Drupal::entityQuery('node')->accessCheck(false);
     $query->condition('type', 'os2web_meetings_meeting');
     $query->condition('field_os2web_m_source', $this->getPluginId());
     $entity_ids = $query->execute();
